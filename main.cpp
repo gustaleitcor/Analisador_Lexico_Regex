@@ -11,7 +11,7 @@ typedef struct
 
 const std::vector<Pattern>
     patterns = {
-        {"REAL", std::regex("\\d+\\.\\d+")},
+        {"REAL", std::regex("\\b\\d+\\.\\d+\\b")},
         {"INTEGER", std::regex("\\d+")},
 
         {"OPERATOR", std::regex("-")},
@@ -53,7 +53,9 @@ const std::vector<Pattern>
         {"ATRIBUTION", std::regex(":=")},
 
         {"COMMENT", std::regex("\\{[^\\}]*\\}")},
-        {"IDENTIFIER", std::regex("\\b[a-zA-Z][a-zA-Z0-9_]*\\b")},
+        {"OPEN_COMMENT", std::regex("\\{.*")},
+
+        {"IDENTIFIER", std::regex("\\b[a-zA-Z]\\w*\\b")},
 };
 
 int main(int argc, char **argv)
@@ -65,6 +67,7 @@ int main(int argc, char **argv)
     std::ofstream output_file;
 
     unsigned int match_size = 0, match_position = input.size(), line = 1;
+    bool opened_comment = false;
 
     if (argc > 1)
     {
@@ -131,6 +134,23 @@ int main(int argc, char **argv)
 
             if (match_size == 0)
                 break;
+
+            if (type == "OPEN_COMMENT" || type == "COMMENT" || opened_comment)
+            {
+                opened_comment = true;
+                auto closing_brace_pos = input.find('}');
+
+                if (closing_brace_pos != std::string::npos)
+                {
+                    start = input.begin() + closing_brace_pos;
+                    opened_comment = false;
+                }
+                else
+                {
+                    start = end;
+                }
+                continue;
+            }
 
             output_file << type << ' ' << symbol << ' ' << line << std::endl;
             // std::cout << type << ' ' << symbol << ' ' << line << std::endl;

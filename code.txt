@@ -1,5 +1,6 @@
-program teste; {programa exemplo}
-var
+program teste; {programa
+var integer
+exemplo}var
   valor_1: integer;
   gram: real;
 begin
