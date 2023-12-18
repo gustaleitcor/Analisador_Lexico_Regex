@@ -71,6 +71,7 @@ int main(int argc, char **argv)
         if (argc == 2)
         {
             input_file.open(argv[1]);
+            output_file.open("a.txt");
         }
         else if (argc == 3)
         {
