@@ -50,7 +50,7 @@ const std::vector<Pattern>
         {"DELIMITER", std::regex("\\(")},
         {"DELIMITER", std::regex("\\)")},
 
-        {"ATRIBUTION", std::regex(":=")},
+        {"ASSIGN", std::regex(":=")},
 
         {"COMMENT", std::regex("\\{[^\\}]*\\}")},
         {"OPEN_COMMENT", std::regex("\\{.*")},
@@ -69,6 +69,7 @@ int main(int argc, char **argv)
     unsigned int match_size = 0, match_position = input.size(), line = 1;
     bool opened_comment = false;
 
+    // Trata a entrada dos parametros argc, argv
     if (argc > 1)
     {
         if (argc == 2)
@@ -88,6 +89,8 @@ int main(int argc, char **argv)
         }
     }
 
+    // Verifica se os arquivos foram abertos normalmente
+
     if (!input_file)
     {
         std::cerr << "ERROR: Could not open file" << std::endl;
@@ -101,6 +104,8 @@ int main(int argc, char **argv)
         return -1;
     }
 
+    // Inicia a leitura do arquivo
+
     while (getline(input_file, input))
     {
         start = input.begin();
@@ -112,9 +117,23 @@ int main(int argc, char **argv)
 
             for (auto pattern : patterns)
             {
+                // procura por uma match por todos os padrões
                 if (std::regex_search(start, end, match_results, pattern.pattern))
                 {
-                    if (match_results.position() == match_position)
+                    // Se a procura resultou em um match, duas condições são verificadas:
+
+                    // 1: Caso a posição do match corrente seja menor do que o menor a posição previamente escolhida, o match corrente torna-se o escolhido
+                    // Em outras palavras, o match mais a esquerda é escolhido
+                    if (match_results.position() < match_position)
+                    {
+                        match_position = match_results.position();
+                        match_size = match_results.length();
+                        type = pattern.name;
+                        symbol = match_results[0];
+                    }
+                    // 2: Caso a posição do match corrente coincida com o match previamente escolhido, torna-se o escolhido aquele que tem mais caracteres
+                    // Importante para tratar os casos de <= e <, em que ambos começam no mesmo lugar, porém o <= contém mais caracteres
+                    else if (match_results.position() == match_position)
                     {
                         if (match_results.length() > match_size)
                         {
@@ -123,29 +142,29 @@ int main(int argc, char **argv)
                             symbol = match_results[0];
                         }
                     }
-                    else if (match_results.position() < match_position)
-                    {
-                        match_position = match_results.position();
-                        match_size = match_results.length();
-                        type = pattern.name;
-                        symbol = match_results[0];
-                    }
                 }
             }
+
+            // Caso a busca não encontre um match, interrompe o laço e vai para a proxima linha (se possivel)
 
             if (match_size == 0)
                 break;
 
+            // Se foi encontrado um comentário aberto ou um comentário ou se o comentário estiver aberto
             if (type == "OPEN_COMMENT" || type == "COMMENT" || opened_comment)
             {
                 opened_comment = true;
+
+                // É performado uma busca ao caracter '}', local de fechamento do comentário
                 auto closing_brace_pos = input.find('}');
 
+                // Caso seja achado o fechamento do comentário, a execução do algoritmo volta a partir do '}'
                 if (closing_brace_pos != std::string::npos)
                 {
                     start = input.begin() + closing_brace_pos;
                     opened_comment = false;
                 }
+                // Caso contrário, pula-se a linha
                 else
                 {
                     start = end;
@@ -153,14 +172,21 @@ int main(int argc, char **argv)
                 continue;
             }
 
+            // A escrita é performada no arquivo de saída
             output_file << type << ' ' << symbol << ' ' << line << std::endl;
             // std::cout << type << ' ' << symbol << ' ' << line << std::endl;
 
+            // Atualiza-se o inicio para logo após ao match encontrado
             start += match_position + match_size;
         }
+
+        // Linha += 1
         line++;
     }
 
+    // Fecha os arquivos
     input_file.close();
     output_file.close();
+
+    return 0;
 }
