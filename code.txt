@@ -1,11 +1,10 @@
-program teste; {programa
-var integer
-exemplo}var
+program teste; {programa var integer exemplo}
+var
   valor_1: integer;
   gram: real;
 begin
   valor1 := -10;
   z := 53;
   if(z<= 20)
-  valor1 = valor1 / gram;
+  valor1 := valor1 / gram;
 end.

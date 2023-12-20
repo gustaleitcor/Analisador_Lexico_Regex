@@ -122,7 +122,7 @@ int main(int argc, char **argv)
                 {
                     // Se a procura resultou em um match, duas condições são verificadas:
 
-                    // 1: Caso a posição do match corrente seja menor do que o menor a posição previamente escolhida, o match corrente torna-se o escolhido
+                    // 1: Caso a posição do match corrente seja menor do que a menor posição previamente escolhida, o match corrente torna-se o escolhido
                     // Em outras palavras, o match mais a esquerda é escolhido
                     if (match_results.position() < match_position)
                     {
@@ -168,6 +168,7 @@ int main(int argc, char **argv)
                 else
                 {
                     start = end;
+                    break;
                 }
                 continue;
             }
