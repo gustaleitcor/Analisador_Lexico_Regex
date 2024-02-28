@@ -179,8 +179,8 @@ int main(int argc, char **argv) {
 
       for (auto c : unknown) {
         if (c != ' ') {
-          output_file << "UNKNOWN" << ' ' << unknown << ' ' << line
-                      << std::endl;
+          std::cout << "ERROR: caracter desconhecido pela linguagem: "
+                    << unknown << " linha: " << line << std::endl;
           break;
         }
       }
@@ -192,8 +192,8 @@ int main(int argc, char **argv) {
       unknown = input.substr(start - input.begin() + 1, start - input.end());
       for (auto c : unknown) {
         if (c != ' ') {
-          output_file << "UNKNOWN" << ' ' << unknown << ' ' << line
-                      << std::endl;
+          std::cout << "ERROR: caracter desconhecido pela linguagem: "
+                    << unknown << " linha: " << line << std::endl;
           break;
         }
       }
