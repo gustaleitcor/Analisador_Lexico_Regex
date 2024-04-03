@@ -177,8 +177,8 @@ int main(int argc, char **argv) {
       unknown = input.substr(last_start - input.begin(),
                              start - last_start - match_size);
 
-      for (auto c : unknown) {
-        if (c != ' ') {
+      for (unsigned char c : unknown) {
+        if (c > 255 || c == '&' || c < 0) {
           std::cout << "ERROR: caracter desconhecido pela linguagem: "
                     << unknown << " linha: " << line << std::endl;
           break;
@@ -190,8 +190,8 @@ int main(int argc, char **argv) {
 
     if (start - input.begin() != input.size()) {
       unknown = input.substr(start - input.begin() + 1, start - input.end());
-      for (auto c : unknown) {
-        if (c != ' ') {
+      for (unsigned char c : unknown) {
+        if (c > 255 || c == '&' || c < 0) {
           std::cout << "ERROR: caracter desconhecido pela linguagem: "
                     << unknown << " linha: " << line << std::endl;
           break;
